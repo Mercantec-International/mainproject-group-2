@@ -10,7 +10,7 @@ namespace VitalMetrics.Controllers
     public class UserController : ControllerBase
     {
         // GET: api/<UserController>
-        [HttpGet]
+        [HttpGet("getall")]
         public IEnumerable<string> Get()
         {
             return new string[] { "value1", "value2" };
