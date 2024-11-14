@@ -1,0 +1,6 @@
+@VitalMetrics_HostAddress = http://localhost:5036
+
+GET {{VitalMetrics_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
