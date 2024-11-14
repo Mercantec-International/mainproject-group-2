@@ -12,19 +12,19 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["Netherlands Project/Netherlands Project.csproj", "Netherlands Project/"]
-RUN dotnet restore "./Netherlands Project/Netherlands Project.csproj"
+COPY ["NetherlandsProject/NetherlandsProject.csproj", "NetherlandsProject/"]
+RUN dotnet restore "./NetherlandsProject/NetherlandsProject.csproj"
 COPY . .
 WORKDIR "/src/Netherlands Project"
-RUN dotnet build "./Netherlands Project.csproj" -c $BUILD_CONFIGURATION -o /app/build
+RUN dotnet build "./NetherlandsProject.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # This stage is used to publish the service project to be copied to the final stage
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./Netherlands Project.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "./NetherlandsProject.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 # This stage is used in production or when running from VS in regular mode (Default when not using the Debug configuration)
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "Netherlands Project.dll"]
+ENTRYPOINT ["dotnet", "NetherlandsProject.dll"]
