@@ -17,7 +17,7 @@ namespace VitalMetrics.Controllers
         }
 
         // GET api/<UserController>/5
-        [HttpGet("{id}")]
+        [HttpGet("getuserbyid/{id}")]
         public string Get(int id)
         {
             return "value";
@@ -30,13 +30,13 @@ namespace VitalMetrics.Controllers
         }
 
         // PUT api/<UserController>/5
-        [HttpPut("{id}")]
+        [HttpPut("updateuserbyid/{id}")]
         public void Put(int id, [FromBody] string value)
         {
         }
 
         // DELETE api/<UserController>/5
-        [HttpDelete("{id}")]
+        [HttpDelete("deleteuserbyid/{id}")]
         public void Delete(int id)
         {
         }
