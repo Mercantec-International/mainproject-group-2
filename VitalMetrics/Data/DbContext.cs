@@ -14,6 +14,7 @@ namespace VitalMetrics.Data
         public DbSet<Earheartbeat> Earheartbeats { get; set; }
         public DbSet<FHeartbeat> Fingerheartbeats { get; set; }
         public DbSet<Oxilevel> OxygenLevel { get; set; }
+        public DbSet<User> Users { get; set; }
 
 
         // datetimestamp and updated at stamp
