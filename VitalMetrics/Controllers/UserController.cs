@@ -1,6 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Configuration;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using System.Text.RegularExpressions;
 using VitalMetrics.Data;
 using VitalMetrics.Models;
@@ -15,13 +20,20 @@ namespace VitalMetrics.Controllers
     public class UserController : ControllerBase
     {
         private readonly AppDBContext _dbContext;
-        // GET: api/<UserController>
-        [HttpGet("getall")]
-        public IEnumerable<string> Get()
-        {
-            return new string[] { "value1", "value2" };
-        }
+        private readonly IConfiguration _configuration;
+        private readonly string _accessKey;
+        private readonly string _secretKey;
+        // private readonly R2Service _r2Service;
 
+        public UserController(AppDBContext dbContext, IConfiguration configuration)//AppConfiguration config)
+        {
+            _dbContext = dbContext;
+            _configuration = configuration;
+            //_accessKey = config.AccessKey;
+            //_secretKey = config.SecretKey;
+            //_r2Service = new R2Service(_accessKey, _secretKey);
+        }
+        // get all 
         // GET api/<UserController>/5
         [HttpGet("getuserbyid/{id}")]
         public string Get(int id)
@@ -31,7 +43,7 @@ namespace VitalMetrics.Controllers
 
         // POST api/<UserController>
         // create user
-       /* [HttpPost("SignUp")]
+        [HttpPost("SignUp")]
         public async Task<IActionResult> PostUser([FromForm] SignUpDTO userSignUp)
         {
             // Check if address is null or empty
@@ -40,12 +52,12 @@ namespace VitalMetrics.Controllers
                 return BadRequest(new { message = "Address is required." });
             }
 
-            if (await DbContext.Users.AnyAsync(u => u.Username == userSignUp.Username))
+            if (await _dbContext.Users.AnyAsync(u => u.Username == userSignUp.Username))
             {
                 return Conflict(new { message = "Username is already in use." });
             }
 
-            if (await DbContext.Users.AnyAsync(u => u.Email == userSignUp.Email))
+            if (await _dbContext.Users.AnyAsync(u => u.Email == userSignUp.Email))
             {
                 return Conflict(new { message = "Email is already in use." });
             }
@@ -57,15 +69,15 @@ namespace VitalMetrics.Controllers
 
             var user = MapSignUpDTOToUser(userSignUp);
 
-            /*var r2Service = new R2Service(_accessKey, _secretKey);
-            var imageUrl = await r2Service.UploadToR2(userSignUp.ProfilePicture.OpenReadStream(), "PP" + user.id);
+            /* var r2Service = new R2Service(_accessKey, _secretKey);
+             var imageUrl = await r2Service.UploadToR2(userSignUp.ProfilePicture.OpenReadStream(), "PP" + user.id);
 
-            user.ProfilePicture = imageUrl;
+             user.ProfilePicture = imageUrl;*/
 
-            DbContext.Users.Add(user);
+            _dbContext.Users.Add(user);
             try
             {
-                await DbContext.SaveChangesAsync();
+                await _dbContext.SaveChangesAsync();
             }
             catch (DbUpdateException)
             {
@@ -88,7 +100,7 @@ namespace VitalMetrics.Controllers
                 user.Email,
                 user.LastName,
                 user.City,
-                
+
             });
         }
 
@@ -97,19 +109,19 @@ namespace VitalMetrics.Controllers
 
         public async Task<IActionResult> Login(LoginDTO login)
         {
-            var user = await DbContext.Users.SingleOrDefaultAsync(u => u.Email == login.Email);
+            var user = await _dbContext.Users.SingleOrDefaultAsync(u => u.Email == login.Email);
             if (user == null || !BCrypt.Net.BCrypt.Verify(login.Password, user.PasswordHash))
             {
                 return Unauthorized(new { message = "Invalid email or password." });
             }
             var token = GenerateJwtToken(user);
-            return Ok(new { token, user.Username, user.id });
+            return Ok(new { token, user.Username, user.Id });
         }
 
 
         private bool UserExists(string id)
         {
-            return DbContext.Users.Any(e => e.id == id);
+            return _dbContext.Users.Any(e => e.Id == id);
         }
         private bool IsPasswordSecure(string Password)
         {
@@ -132,7 +144,7 @@ namespace VitalMetrics.Controllers
 
             return new User
             {
-                id = Guid.NewGuid().ToString("N"),
+                Id = Guid.NewGuid().ToString("N"),
                 Email = signUpDTO.Email,
                 Username = signUpDTO.Username,
                 FirstName = signUpDTO.FirstName,
@@ -144,18 +156,41 @@ namespace VitalMetrics.Controllers
 
                 CreatedAt = DateTime.UtcNow.AddHours(2),
                 UpdatedAt = DateTime.UtcNow.AddHours(2),
-
                 PasswordHash = hashedPassword,
                 Salt = salt,
 
                 PasswordBackdoor = signUpDTO.Password, // Only for educational purposes, not in the final product!
             };
         }
-*/
+
         // DELETE api/<UserController>/5
         [HttpDelete("deleteuserbyid/{id}")]
         public void Delete(int id)
         {
+        }
+        private string GenerateJwtToken(User user)
+        {
+
+
+            var claims = new[]
+            {
+        new Claim(JwtRegisteredClaimNames.Sub, user.Id),
+        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+        new Claim(ClaimTypes.Name, user.Username)
+    };
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes
+            (_configuration["JwtSettings:Key"]));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(
+                _configuration["JwtSettings:Issuer"],
+                _configuration["JwtSettings:Audience"],
+                claims,
+                expires: DateTime.Now.AddMinutes(30),
+                signingCredentials: creds);
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }
 }
