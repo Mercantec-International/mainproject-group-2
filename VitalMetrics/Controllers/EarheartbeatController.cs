@@ -43,10 +43,16 @@ namespace VitalMetrics.Controllers
         [HttpPost("create")]
         public async Task<ActionResult<Earheartbeat>> PostHeartRateData(Earheartbeat data)
         {
-            _dbContext.Earheartbeats.Add(data);
+            var newdata = new Earheartbeat()
+            {
+                Id = Guid.NewGuid().ToString("N"),
+                BPM = data.BPM
+                // Add any other properties if applicable
+            };
+            _dbContext.Earheartbeats.Add(newdata);
             await _dbContext.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetHeartRateData), new { id = data.Id }, data);
+            return CreatedAtAction(nameof(GetHeartRateData), new { id = newdata.Id }, newdata);
         }
 
         // PUT: api/HeartRateData/5

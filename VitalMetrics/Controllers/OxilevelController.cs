@@ -44,10 +44,17 @@ namespace VitalMetrics.Controllers
         [HttpPost("post")]
         public async Task<ActionResult<Oxilevel>> PostSensorData(Oxilevel sensorData)
         {
-            _dbContext.OxygenLevel.Add(sensorData);
+            var newOxi = new Oxilevel
+            {
+                Id = Guid.NewGuid().ToString("N"),
+                OxygenLevel = sensorData.OxygenLevel,
+                HeartRateBPM = sensorData.HeartRateBPM
+            };
+
+            _dbContext.OxygenLevel.Add(newOxi);
             await _dbContext.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetSensorData), new { id = sensorData.Id }, sensorData);
+            return CreatedAtAction(nameof(GetSensorData), new { id = newOxi.Id }, newOxi);
         }
 
         // PUT api/<OxilevelController>/5

@@ -12,8 +12,8 @@ using VitalMetrics.Data;
 namespace VitalMetrics.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    [Migration("20241119111835_sso")]
-    partial class sso
+    [Migration("20241126095239_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,34 @@ namespace VitalMetrics.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("VitalMetrics.Models.Accelerometer", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<int>("Changes")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("X")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Y")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Z")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Accelerometer");
+                });
 
             modelBuilder.Entity("VitalMetrics.Models.Earheartbeat", b =>
                 {
@@ -118,10 +146,16 @@ namespace VitalMetrics.Migrations
                     b.Property<string>("Password")
                         .HasColumnType("text");
 
+                    b.Property<string>("PasswordBackdoor")
+                        .HasColumnType("text");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("text");
+
                     b.Property<string>("Phone")
                         .HasColumnType("text");
 
-                    b.Property<string>("PostalCode")
+                    b.Property<string>("Postal")
                         .HasColumnType("text");
 
                     b.Property<string>("ProfilePicture")
@@ -129,6 +163,9 @@ namespace VitalMetrics.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Region")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Salt")
                         .HasColumnType("text");
 
                     b.Property<DateTime>("UpdatedAt")
