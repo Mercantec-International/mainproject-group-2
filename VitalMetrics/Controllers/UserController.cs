@@ -152,6 +152,7 @@ namespace VitalMetrics.Controllers
                 Address = signUpDTO.Address,
                 Postal = signUpDTO.Postal,
                 City = signUpDTO.City,
+                Password = signUpDTO.Password,
 
 
                 CreatedAt = DateTime.UtcNow.AddHours(2),
