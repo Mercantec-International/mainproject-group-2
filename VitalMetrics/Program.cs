@@ -2,6 +2,9 @@ using Microsoft.EntityFrameworkCore;
 using VitalMetrics.Data;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,7 +45,30 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddDbContext<AppDBContext>(options =>
         options.UseNpgsql(connectionString));
 
+// Configure JWT Authentication
+builder.Services.AddAuthentication(x =>
+{
+    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(x =>
+{
+    x.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidIssuer = Configuration["Authentication:JwtSettings:Issuer"],
+        ValidAudience = Configuration["Authentication:JwtSettings:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey
+        (
+        Encoding.UTF8.GetBytes(Configuration["Authentication:JwtSettings:Key"])
+        ),
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true
+    };
+});
 var app = builder.Build();
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -55,9 +81,10 @@ app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
+app.UseCors(x => x.AllowAnyMethod().AllowAnyHeader().SetIsOriginAllowed(origin => true).AllowCredentials()); ;
+app.UseHttpsRedirection();
 app.UseAuthentication();
-app.UseCors("AllowAll");
 app.MapControllers();
+app.UseAuthorization();
 
 app.Run();

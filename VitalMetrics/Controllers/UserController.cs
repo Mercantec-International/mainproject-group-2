@@ -25,7 +25,7 @@ namespace VitalMetrics.Controllers
         private readonly string _secretKey;
         // private readonly R2Service _r2Service;
 
-        public UserController(AppDBContext dbContext, IConfiguration configuration)//AppConfiguration config)
+        public UserController(AppDBContext dbContext, IConfiguration configuration)
         {
             _dbContext = dbContext;
             _configuration = configuration;
@@ -181,12 +181,12 @@ namespace VitalMetrics.Controllers
     };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes
-            (_configuration["JwtSettings:Key"]));
+            (_configuration["Authentication:JwtSettings:Key"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(
-                _configuration["JwtSettings:Issuer"],
-                _configuration["JwtSettings:Audience"],
+                _configuration["Authentication:JwtSettings:Issuer"],
+                _configuration["Authentication:JwtSettings:Audience"],
                 claims,
                 expires: DateTime.Now.AddMinutes(30),
                 signingCredentials: creds);
