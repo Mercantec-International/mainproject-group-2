@@ -84,8 +84,6 @@ namespace VitalMetrics.Migrations
                     City = table.Column<string>(type: "text", nullable: true),
                     Region = table.Column<string>(type: "text", nullable: true),
                     Postal = table.Column<string>(type: "text", nullable: true),
-                    ProfilePicture = table.Column<string>(type: "text", nullable: false),
-                    GoogleId = table.Column<string>(type: "text", nullable: false),
                     Country = table.Column<string>(type: "text", nullable: true),
                     Phone = table.Column<string>(type: "text", nullable: true),
                     Username = table.Column<string>(type: "text", nullable: true),
