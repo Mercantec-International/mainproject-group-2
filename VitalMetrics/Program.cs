@@ -17,6 +17,13 @@ IConfiguration Configuration = builder.Configuration;
 string connectionString = Configuration.GetConnectionString("DefaultConnection")
 ?? Environment.GetEnvironmentVariable("DefaultConnection");
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader());
+});
 // Configure Authentication
 builder.Services.AddAuthentication(options =>
 {
