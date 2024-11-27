@@ -12,7 +12,11 @@
         public string? Region { get; set; }
         public string? Postal { get; set; }
         public string? ProfilePicture { get; set; }
+<<<<<<< HEAD
         public string? GoogleId { get; set; } // Google Account ID
+=======
+        public string? GoogleId { get; set; } 
+>>>>>>> c91675d5846bf3f974754526e58dceaea92cb229
         public string? Country { get; set; }
         public string? Phone { get; set; }
         public string? Username { get; set; }
