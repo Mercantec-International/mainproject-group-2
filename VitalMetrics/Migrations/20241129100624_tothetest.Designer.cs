@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using VitalMetrics.Data;
@@ -11,9 +12,11 @@ using VitalMetrics.Data;
 namespace VitalMetrics.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    partial class AppDBContextModelSnapshot : ModelSnapshot
+    [Migration("20241129100624_tothetest")]
+    partial class tothetest
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -68,9 +71,6 @@ namespace VitalMetrics.Migrations
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -184,9 +184,6 @@ namespace VitalMetrics.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("UserId")
-                        .HasColumnType("text");
-
                     b.Property<string>("Username")
                         .HasColumnType("text");
 
@@ -199,24 +196,21 @@ namespace VitalMetrics.Migrations
                 {
                     b.HasOne("VitalMetrics.Models.User", null)
                         .WithMany("Accelerometers")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("VitalMetrics.Models.FHeartbeat", b =>
                 {
                     b.HasOne("VitalMetrics.Models.User", null)
                         .WithMany("FingerHeartbeats")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("VitalMetrics.Models.Oxilevel", b =>
                 {
                     b.HasOne("VitalMetrics.Models.User", null)
                         .WithMany("Oxilevels")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("VitalMetrics.Models.User", b =>

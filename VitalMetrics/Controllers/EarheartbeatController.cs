@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using VitalMetrics.Data;
 using VitalMetrics.Models;
 
@@ -19,10 +21,31 @@ namespace VitalMetrics.Controllers
         }
 
         // GET: api/HeartRateData
+        
         [HttpGet("getall")]
         public async Task<ActionResult<IEnumerable<Earheartbeat>>> GetHeartRateData()
         {
             return await _dbContext.Earheartbeats.ToListAsync();
+        }
+        [Authorize]
+        [HttpGet("getEarheartbeatdata")]
+        public async Task<ActionResult<List<Earheartbeat>>> GetUserEarheartbeatData()
+        {
+            // Retrieve the logged-in user's ID from the JWT token
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized("User is not logged in.");
+            }
+
+            // Fetch Earheartbeat data associated with the logged-in user
+            var userEarheartbeatData = await _dbContext.Earheartbeats
+                .Where(a => a.UserId == userId) // Filter by UserId
+                .AsNoTracking()
+                .ToListAsync();
+
+            return Ok(userEarheartbeatData);
         }
 
         // GET: api/HeartRateData/5
@@ -38,15 +61,19 @@ namespace VitalMetrics.Controllers
 
             return data;
         }
-
+        [Authorize]
         // POST: api/HeartRateData
         [HttpPost("create")]
         public async Task<ActionResult<Earheartbeat>> PostHeartRateData(Earheartbeat data)
         {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var newdata = new Earheartbeat()
             {
                 Id = Guid.NewGuid().ToString("N"),
-                BPM = data.BPM
+                BPM = data.BPM,
+                 UserId = data.UserId,
+                  CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
                 // Add any other properties if applicable
             };
             _dbContext.Earheartbeats.Add(newdata);

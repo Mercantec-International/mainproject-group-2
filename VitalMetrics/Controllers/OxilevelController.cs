@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using VitalMetrics.Data;
 using VitalMetrics.Models;
@@ -41,6 +42,7 @@ namespace VitalMetrics.Controllers
         }
 
         // POST api/<OxilevelController>
+        [Authorize]
         [HttpPost("post")]
         public async Task<ActionResult<Oxilevel>> PostSensorData(Oxilevel sensorData)
         {
@@ -48,7 +50,10 @@ namespace VitalMetrics.Controllers
             {
                 Id = Guid.NewGuid().ToString("N"),
                 OxygenLevel = sensorData.OxygenLevel,
-                HeartRateBPM = sensorData.HeartRateBPM
+                HeartRateBPM = sensorData.HeartRateBPM,
+                 UserId = sensorData.UserId,
+                  CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
             };
 
             _dbContext.OxygenLevel.Add(newOxi);

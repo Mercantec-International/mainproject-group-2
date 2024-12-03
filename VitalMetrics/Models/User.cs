@@ -18,6 +18,9 @@
         public string? PasswordHash { get; set; }
         public string? PasswordBackdoor { get; set; }
         public string? Salt { get; set; }
+        public ICollection<Oxilevel> Oxilevels { get; set; }
+        public ICollection<Accelerometer> Accelerometers { get; set; }
+        public ICollection<FHeartbeat> FingerHeartbeats { get; set; }
     }
 
     public class SignUpDTO
