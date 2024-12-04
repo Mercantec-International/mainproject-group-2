@@ -1,0 +1,22 @@
+/* src/tailwind.css */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom classes */
+.navbar {
+    @apply bg-gray-900 text-gray-200 shadow-md p-4 flex justify-between items-center;
+}
+
+.content-area {
+    @apply bg-gray-800 text-gray-300 p-8 rounded-lg shadow-lg max-w-3xl mx-auto mt-8;
+}
+
+.footer-section {
+    @apply bg-gray-900 text-gray-400 p-6;
+}
+
+.footer-links {
+    @apply text-blue-400 hover:text-white transition duration-200;
+}
