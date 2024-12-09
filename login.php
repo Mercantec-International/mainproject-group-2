@@ -25,50 +25,46 @@ session_start();
         <!-- Login Button -->
         <button type="button" onclick="loginUser()" class="w-full bg-blue-500 text-white p-3 rounded-lg hover:bg-blue-600">Login</button>
 
-        <p>Please log into VitalMetrics to see your data.</p>
+        <p class="mt-4 text-sm text-gray-400">Please log into VitalMetrics to see your data.</p>
     </form>
 </div>
 
 <script>
 async function loginUser() {
-    // Get form data
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
 
-    // Prepare request body
-    const requestBody = {
-        email: email,
-        password: password
-    };
+    // Basic validation
+    if (!email || !password) {
+        alert('Please enter both email and password.');
+        return;
+    }
+
+    const requestBody = { email, password };
 
     try {
         const response = await fetch('https://mainproject-group-2.onrender.com/api/User/Login', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(requestBody),
         });
 
         if (response.ok) {
-            const responseData = await response.json();
-            console.log('Login successful:', responseData);
-            alert('Login successful!');
-            
-            // On success, send the server a signal to start the session
-            // Assuming the API will return a user object or token, you can use this to set session info
-            const user = responseData.user;  // Replace with actual response structure
-            localStorage.setItem('loggedin', true);  // Store login status in localStorage for persistent login
+            const data = await response.json();
+            const token = data.token; // Assuming the response contains a JWT token
 
-            // Redirect to home page
-            window.location.href = 'index.php'; // Redirect to the home page
+            // Store the JWT token and login status in localStorage
+            localStorage.setItem('jwt', token);
+            localStorage.setItem('loggedin', true);
+
+            alert('Login successful!');
+            window.location.href = 'index.php'; // Redirect to the homepage/dashboard
         } else {
-            const errorData = await response.json();
-            console.error('Error:', errorData);
-            alert('Error: ' + (errorData.message || 'Invalid credentials.'));
+            const error = await response.json();
+            alert(`Error: ${error.message || 'Invalid credentials'}`);
         }
     } catch (error) {
-        console.error('Network error:', error);
+        console.error('Error:', error);
         alert('Network error: Unable to connect to the server.');
     }
 }

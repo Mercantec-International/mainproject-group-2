@@ -1,5 +1,19 @@
 <!-- comparisons.php -->
 <?php include 'inc/header.php'; ?>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Check if the user is logged in by verifying the "loggedin" flag in localStorage
+    const isLoggedIn = localStorage.getItem('loggedin') === 'true';
+
+    if (!isLoggedIn) {
+        // If not logged in, redirect to the login page
+        alert('You are not logged in. Redirecting to login...');
+        window.location.href = 'login.php';
+    }
+});
+</script>
+
 <title>VitalMetrics - Comparisons</title>
 
 <div class="bg-gray-800 text-gray-300 p-8 rounded-lg shadow-lg max-w-3xl mx-auto mt-8 mb-16">
