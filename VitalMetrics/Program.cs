@@ -44,6 +44,7 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddDbContext<AppDBContext>(options =>
         options.UseNpgsql(connectionString));
+builder.Services.AddSingleton<TokenService>();
 
 // Configure JWT Authentication
 builder.Services.AddAuthentication(x =>
