@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace VitalMetrics.Migrations
 {
     /// <inheritdoc />
-    public partial class init : Migration
+    public partial class retry : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -85,6 +85,8 @@ namespace VitalMetrics.Migrations
                     Region = table.Column<string>(type: "text", nullable: true),
                     Postal = table.Column<string>(type: "text", nullable: true),
                     ProfilePicture = table.Column<string>(type: "text", nullable: true),
+                    IsEmailConfirmed = table.Column<bool>(type: "boolean", nullable: false),
+                    EmailConfirmationToken = table.Column<string>(type: "text", nullable: true),
                     GoogleId = table.Column<string>(type: "text", nullable: true),
                     Country = table.Column<string>(type: "text", nullable: true),
                     Phone = table.Column<string>(type: "text", nullable: true),

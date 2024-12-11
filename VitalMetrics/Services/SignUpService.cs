@@ -9,7 +9,7 @@ namespace VitalMetrics.Services
 {
     public class SignUpService
     {
-        private readonly IConfiguration _configuration;
+        
         public  bool IsPasswordSecure(string Password)
         {
             var hasUpperCase = new Regex(@"[A-Z]+");
@@ -60,30 +60,7 @@ namespace VitalMetrics.Services
             string pattern = @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
             return Regex.IsMatch(email, pattern);
         }
-        private string GenerateJwtToken(User user)
-        {
-
-
-            var claims = new[]
-            {
-        new Claim(JwtRegisteredClaimNames.Sub, user.Id),
-        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-        new Claim(ClaimTypes.Name, user.Username)
-    };
-
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes
-            (_configuration["Authentication:JwtSettings:Key"]));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-            var token = new JwtSecurityToken(
-                _configuration["Authentication:JwtSettings:Issuer"],
-                _configuration["Authentication:JwtSettings:Audience"],
-                claims,
-                expires: DateTime.Now.AddMinutes(30),
-                signingCredentials: creds);
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
-        }
+       
 
     }
 }

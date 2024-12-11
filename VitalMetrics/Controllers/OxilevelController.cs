@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using VitalMetrics.Data;
 using VitalMetrics.Models;
 
@@ -20,9 +22,11 @@ namespace VitalMetrics.Controllers
 
 
         // GET: api/<OxilevelController>
+        [Authorize]
         [HttpGet("getall")]
         public async Task<ActionResult<IEnumerable<Oxilevel>>> GetSensorData()
         {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; // Get user ID from JWT token
             return await _dbContext.OxygenLevel.ToListAsync();
         }
 

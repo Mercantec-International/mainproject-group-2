@@ -4,14 +4,21 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using VitalMetrics.Models;
+using VitalMetrics.Services;
 
 public class TokenService
 {
     private readonly IConfiguration _configuration;
-
-    public TokenService(IConfiguration configuration)
+    private readonly JWTService _jwtService;
+    public TokenService
+        (
+        JWTService jwtService,
+        IConfiguration configuration
+        )
     {
         _configuration = configuration;
+        _jwtService = jwtService;
     }
 
     public string GenerateEmailConfirmationToken(string userId)
@@ -32,7 +39,7 @@ public class TokenService
         var token = tokenHandler.CreateToken(tokenDescriptor);
         return tokenHandler.WriteToken(token);
     }
-
+   
     public ClaimsPrincipal ValidateToken(string token)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
@@ -55,5 +62,6 @@ public class TokenService
         {
             throw new SecurityTokenException("Invalid token");
         }
+
     }
 }

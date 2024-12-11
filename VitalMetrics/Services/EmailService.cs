@@ -14,7 +14,7 @@ public class EmailService
         _configuration = configuration;
         _templatePath = Path.Combine(
             environment.ContentRootPath,
-            "API",
+
             "Templates",
             "EmailConfirmation.html"
         );
@@ -22,62 +22,85 @@ public class EmailService
 
     private async Task<string> GetEmailTemplate(string confirmationUrl)
     {
-        var assembly = typeof(EmailService).Assembly;
-        var resourceName = "API.Templates.EmailConfirmation.html";
+        if (!File.Exists(_templatePath))
+        {
+            throw new FileNotFoundException($"Email template file not found at {_templatePath}");
+        }
 
-        using var stream = assembly.GetManifestResourceStream(resourceName);
-        using var reader = new StreamReader(stream);
-
+        using var reader = new StreamReader(_templatePath);
         string template = await reader.ReadToEndAsync();
         return template.Replace("{confirmationUrl}", confirmationUrl);
     }
 
-    public async Task SendConfirmationEmail(string email, string confirmationToken)
+    public async Task SendConfirmationEmail(string email, string emailConfirmationToken)
     {
         try
         {
-            var confirmationUrl =
-                $"https://{Environment.GetEnvironmentVariable("APPLICATION_BASE_URL") ?? _configuration["Application:BaseUrl"]}/api/users/confirm-email?token={confirmationToken}&email={email}";
+            // Generate confirmation URL
+            string confirmationToken = Guid.NewGuid().ToString();
+            var confirmationUrl = $"https://mainproject-group-2.onrender.com/api/User/confirm-email?token={confirmationToken}&email={email}";
             var emailBody = await GetEmailTemplate(confirmationUrl);
 
+            // Fetch SMTP credentials from configuration or environment variables
+            var smtpEmail =  Environment.GetEnvironmentVariable("EmailService:Email");
+            var smtpPassword = Environment.GetEnvironmentVariable("EmailService:Password");
+
+            // Validate SMTP credentials
+            if (string.IsNullOrWhiteSpace(smtpEmail))
+            {
+                throw new InvalidOperationException("SMTP email is missing. Check your configuration or environment variables.");
+            }
+
+            if (string.IsNullOrWhiteSpace(smtpPassword))
+            {
+                throw new InvalidOperationException("SMTP password is missing. Check your configuration or environment variables.");
+            }
+
+            // Create and configure the SMTP client
             var smtpClient = new SmtpClient
             {
-                Host =
-                    Environment.GetEnvironmentVariable("GMAIL_SMTP_SERVER")
-                    ?? _configuration["Gmail:SmtpServer"],
-                Port = int.Parse(
-                    Environment.GetEnvironmentVariable("GMAIL_SMTP_PORT")
-                        ?? _configuration["Gmail:Port"]
-                ),
+                Host = "smtp.gmail.com",
+                Port = 587,
+                UseDefaultCredentials = false,
                 EnableSsl = true,
                 DeliveryMethod = SmtpDeliveryMethod.Network,
-                UseDefaultCredentials = false,
-                Credentials = new NetworkCredential(
-                    Environment.GetEnvironmentVariable("GMAIL_USERNAME")
-                        ?? _configuration["Gmail:Username"],
-                    Environment.GetEnvironmentVariable("GMAIL_PASSWORD")
-                        ?? _configuration["Gmail:Password"]
-                )
+                Credentials = new NetworkCredential(smtpEmail, smtpPassword)
             };
 
+            // Create the email message
             var mailMessage = new MailMessage
             {
-                From = new MailAddress(
-                    Environment.GetEnvironmentVariable("GMAIL_FROM") ?? _configuration["Gmail:From"]
-                ),
-                Subject =
-                    Environment.GetEnvironmentVariable("EMAIL_SUBJECT") ?? "Bekræft din email",
+                From = new MailAddress(smtpEmail),
+                Subject = "VitalMetrics - Confirm your email address",
                 Body = emailBody,
                 IsBodyHtml = true
             };
             mailMessage.To.Add(email);
 
+            // Send the email
             await smtpClient.SendMailAsync(mailMessage);
+
+            Console.WriteLine($"Email sent successfully to {email}.");
+        }
+        catch (FileNotFoundException fnfEx)
+        {
+            Console.WriteLine($"Email template file not found: {fnfEx.Message}");
+            throw new InvalidOperationException("Failed to send email due to missing template file.", fnfEx);
+        }
+        catch (SmtpException smtpEx)
+        {
+            Console.WriteLine($"SMTP error occurred: {smtpEx.Message}");
+            throw new InvalidOperationException("Failed to send email due to an SMTP issue. Check your email configuration and network.", smtpEx);
+        }
+        catch (InvalidOperationException invEx)
+        {
+            Console.WriteLine($"Configuration error: {invEx.Message}");
+            throw;
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Email sending failed: {ex.Message}");
-            throw;
+            Console.WriteLine($"An unexpected error occurred while sending the email: {ex.Message}");
+            throw new InvalidOperationException("Failed to send email due to an unexpected error.", ex);
         }
     }
 }

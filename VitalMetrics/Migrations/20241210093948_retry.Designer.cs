@@ -12,8 +12,8 @@ using VitalMetrics.Data;
 namespace VitalMetrics.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    [Migration("20241126095239_init")]
-    partial class init
+    [Migration("20241210093948_retry")]
+    partial class retry
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -133,12 +133,17 @@ namespace VitalMetrics.Migrations
                     b.Property<string>("Email")
                         .HasColumnType("text");
 
+                    b.Property<string>("EmailConfirmationToken")
+                        .HasColumnType("text");
+
                     b.Property<string>("FirstName")
                         .HasColumnType("text");
 
                     b.Property<string>("GoogleId")
-                        .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<bool>("IsEmailConfirmed")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("LastName")
                         .HasColumnType("text");
@@ -159,7 +164,6 @@ namespace VitalMetrics.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("ProfilePicture")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Region")

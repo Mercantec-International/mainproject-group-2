@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using VitalMetrics.Data;
@@ -11,9 +12,11 @@ using VitalMetrics.Data;
 namespace VitalMetrics.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    partial class AppDBContextModelSnapshot : ModelSnapshot
+    [Migration("20241210123026_retry2")]
+    partial class retry2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -49,8 +52,6 @@ namespace VitalMetrics.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Accelerometer");
                 });
@@ -96,8 +97,6 @@ namespace VitalMetrics.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
-
                     b.ToTable("Fingerheartbeats");
                 });
 
@@ -122,8 +121,6 @@ namespace VitalMetrics.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("OxygenLevel");
                 });
@@ -199,39 +196,6 @@ namespace VitalMetrics.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("VitalMetrics.Models.Accelerometer", b =>
-                {
-                    b.HasOne("VitalMetrics.Models.User", null)
-                        .WithMany("Accelerometers")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("VitalMetrics.Models.FHeartbeat", b =>
-                {
-                    b.HasOne("VitalMetrics.Models.User", null)
-                        .WithMany("FingerHeartbeats")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("VitalMetrics.Models.Oxilevel", b =>
-                {
-                    b.HasOne("VitalMetrics.Models.User", null)
-                        .WithMany("Oxilevels")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("VitalMetrics.Models.User", b =>
-                {
-                    b.Navigation("Accelerometers");
-
-                    b.Navigation("FingerHeartbeats");
-
-                    b.Navigation("Oxilevels");
                 });
 #pragma warning restore 612, 618
         }

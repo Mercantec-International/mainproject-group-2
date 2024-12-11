@@ -24,7 +24,37 @@ namespace VitalMetrics.Services
             string pattern = @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
             return Regex.IsMatch(email, pattern);
         }
-        private string GenerateJwtToken(User user)
+        public string GenerateRefreshToken(string userId)
+        {
+            var claims = new[]
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, userId),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim("tokenType", "refresh") // For at identificere at dette er en refresh token
+            };
+
+            var key = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(_configuration["JwtSettings:Key"])
+            );
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(
+                _configuration["JwtSettings:Issuer"],
+                _configuration["JwtSettings:Audience"],
+                claims,
+                expires: DateTime.Now.AddDays(7), // Længere udløbstid for refresh tokens
+                signingCredentials: creds
+            );
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+        public (string accessToken, string refreshToken) GenerateTokens(User user)
+        {
+            var accessToken = GenerateJwtToken(user);
+            var refreshToken = GenerateRefreshToken(user.Id);
+            return (accessToken, refreshToken);
+        }
+        public string GenerateJwtToken(User user)
         {
 
 

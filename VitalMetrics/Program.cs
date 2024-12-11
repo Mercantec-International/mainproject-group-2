@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using VitalMetrics.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,6 +28,8 @@ builder.Services.AddCors(options =>
               .AllowAnyMethod()
               .AllowAnyHeader());
 });
+
+
 // Configure Authentication
 builder.Services.AddAuthentication(options =>
 {
@@ -44,7 +47,13 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddDbContext<AppDBContext>(options =>
         options.UseNpgsql(connectionString));
-builder.Services.AddSingleton<TokenService>();
+
+
+builder.Services.AddScoped<SignUpService>();
+builder.Services.AddScoped<JWTService>();
+builder.Services.AddScoped<EmailService>();
+builder.Services.AddSingleton<EmailService>();
+
 
 // Configure JWT Authentication
 builder.Services.AddAuthentication(x =>

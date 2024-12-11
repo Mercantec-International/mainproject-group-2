@@ -12,6 +12,7 @@ using VitalMetrics.Models;
 using VitalMetrics.Services;
 
 
+
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace VitalMetrics.Controllers
@@ -61,33 +62,32 @@ namespace VitalMetrics.Controllers
         // POST api/<UserController>
         // create user
         [HttpPost("SignUp")]
-        public async Task<IActionResult> PostUser([FromForm] SignUpDTO userSignUp)
+        public async Task<IActionResult> PostUser( SignUpDTO userSignUp)
         {
-          
 
-            // Check if username or email already exists
-            if (await _dbContext.Users.AnyAsync(u => u.Username == userSignUp.Username))
-            {
-                return Conflict(new { message = "Username is already in use." });
-            }
 
             if (!_signupService.IsValidEmail(userSignUp.Email))
             {
-                return BadRequest(new { message = "Email not available" });
+                return BadRequest(new { message = "Ugyldig e-mailadresse." });
             }
 
-            // Validate password strength
             if (!_signupService.IsPasswordSecure(userSignUp.Password))
             {
-                return Conflict(new { message = "Password not secure" });
+                return Conflict(new { message = "Adgangskoden er ikke sikker nok." });
             }
 
-            // Map DTO to User model
+            if (await _dbContext.Users.AnyAsync(u => u.Email == userSignUp.Email))
+            {
+                return Conflict(new { message = "E-mailadressen er allerede i brug." });
+            }
+
             var user = _signupService.MapSignUpDTOToUser(userSignUp);
+
             user.EmailConfirmationToken = Guid.NewGuid().ToString();
             user.IsEmailConfirmed = false;
-            // Save user to the database
+
             _dbContext.Users.Add(user);
+
             try
             {
                 await _dbContext.SaveChangesAsync();
@@ -114,7 +114,7 @@ namespace VitalMetrics.Controllers
         }
         private bool UserExists(string id)
         {
-            return _dbContext.Users.Any(e => e.Id == id);
+            return _dbContext.Users.Any(e => e.Id == id);   
         }
 
         [HttpPost("login")]
@@ -135,8 +135,16 @@ namespace VitalMetrics.Controllers
                     }
                 );
             }
-            var token = GenerateJwtToken(user);
-            return Ok(new { token, user.Username, user.Id });
+            var (accessToken, refreshToken) = _jwtService.GenerateTokens(user);
+
+            return Ok(
+               new
+               {
+                   accessToken,
+                   refreshToken,
+                  
+               }
+           );
         }
 
 
