@@ -11,28 +11,6 @@ using VitalMetrics.Data;
 using VitalMetrics.Models;
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace VitalMetrics.Controllers
@@ -68,30 +46,6 @@ namespace VitalMetrics.Controllers
         [HttpPost("SignUp")]
         public async Task<IActionResult> PostUser( SignUpDTO userSignUp)
         {
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
             // Check if address is null or empty
             if (string.IsNullOrWhiteSpace(userSignUp.Address))
             {
@@ -103,35 +57,8 @@ namespace VitalMetrics.Controllers
                 return Conflict(new { message = "Username is already in use." });
             }
 
-
             if (await _dbContext.Users.AnyAsync(u => u.Email == userSignUp.Email))
             {
-
-
-
-
-
-
-
-
-                return BadRequest(new { message = "Ugyldig e-mailadresse." });
-            }
-
-            if (!_signupService.IsPasswordSecure(userSignUp.Password))
-            {
-                return Conflict(new { message = "Adgangskoden er ikke sikker nok." });
-            }
-
-            if (await _dbContext.Users.AnyAsync(u => u.Email == userSignUp.Email))
-            {
-                return Conflict(new { message = "E-mailadressen er allerede i brug." });
-            }
-
-            var user = _signupService.MapSignUpDTOToUser(userSignUp);
-
-            user.EmailConfirmationToken = Guid.NewGuid().ToString();
-            user.IsEmailConfirmed = false;
-
                 return Conflict(new { message = "Email is already in use." });
             }
 
@@ -139,76 +66,6 @@ namespace VitalMetrics.Controllers
             {
                 return Conflict(new { message = "Password is not secure." });
             }
-
-
-                return Conflict(new { message = "Email is already in use." });
-            }
-
-            if (!IsPasswordSecure(userSignUp.Password))
-            {
-                return Conflict(new { message = "Password is not secure." });
-            }
-
-
-
-                return Conflict(new { message = "Email is already in use." });
-            }
-
-            if (!IsPasswordSecure(userSignUp.Password))
-            {
-                return Conflict(new { message = "Password is not secure." });
-            }
-
-
-
-                return Conflict(new { message = "Email is already in use." });
-            }
-
-            if (!IsPasswordSecure(userSignUp.Password))
-            {
-                return Conflict(new { message = "Password is not secure." });
-            }
-
-
-
-                return Conflict(new { message = "Email is already in use." });
-            }
-
-            if (!IsPasswordSecure(userSignUp.Password))
-            {
-                return Conflict(new { message = "Password is not secure." });
-            }
-
-
-
-                return Conflict(new { message = "Email is already in use." });
-            }
-
-            if (!IsPasswordSecure(userSignUp.Password))
-            {
-                return Conflict(new { message = "Password is not secure." });
-            }
-
-
-
-                return Conflict(new { message = "Email is already in use." });
-            }
-
-            if (!IsPasswordSecure(userSignUp.Password))
-            {
-                return Conflict(new { message = "Password is not secure." });
-            }
-
-
-
-                return Conflict(new { message = "Email is already in use." });
-            }
-
-            if (!IsPasswordSecure(userSignUp.Password))
-            {
-                return Conflict(new { message = "Password is not secure." });
-            }
-
 
             var user = MapSignUpDTOToUser(userSignUp);
 
@@ -216,28 +73,6 @@ namespace VitalMetrics.Controllers
              var imageUrl = await r2Service.UploadToR2(userSignUp.ProfilePicture.OpenReadStream(), "PP" + user.id);
 
              user.ProfilePicture = imageUrl;*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
             _dbContext.Users.Add(user);
 
@@ -277,17 +112,6 @@ namespace VitalMetrics.Controllers
 
 
 
-        private bool UserExists(string id)
-        {
-            return _dbContext.Users.Any(e => e.Id == id);   
-        }
-
-
-
-
-
-
-
 
 
 
@@ -315,48 +139,6 @@ namespace VitalMetrics.Controllers
             {
                 return Unauthorized(new { message = "Invalid email or password." });
             }
-
-
-
-
-
-
-
-
-            if (!user.IsEmailConfirmed)
-            {
-                return Unauthorized(
-                    new
-                    {
-                        message = "Email er ikke bekræftet. Tjek venligst din email for bekræftelses-link."
-                    }
-                );
-            }
-            var (accessToken, refreshToken) = _jwtService.GenerateTokens(user);
-
-            return Ok(
-               new
-               {
-                   accessToken,
-                   refreshToken,
-                  
-               }
-           );
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
             var token = GenerateJwtToken(user);
             return Ok(new { token, user.Username, user.Id });
 
