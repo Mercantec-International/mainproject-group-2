@@ -52,6 +52,7 @@ builder.Services.AddDbContext<AppDBContext>(options =>
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 
 builder.Services.AddScoped<SignUpService>();
@@ -59,6 +60,8 @@ builder.Services.AddScoped<JWTService>();
 builder.Services.AddScoped<EmailService>();
 builder.Services.AddSingleton<EmailService>();
 
+=======
+>>>>>>> parent of 31cb9c9 (Updated api)
 =======
 >>>>>>> parent of 31cb9c9 (Updated api)
 =======

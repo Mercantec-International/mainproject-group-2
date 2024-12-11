@@ -13,7 +13,10 @@ using VitalMetrics.Models;
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
+=======
+>>>>>>> parent of 31cb9c9 (Updated api)
 =======
 >>>>>>> parent of 31cb9c9 (Updated api)
 =======
@@ -64,8 +67,11 @@ namespace VitalMetrics.Controllers
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
+=======
+>>>>>>> parent of 31cb9c9 (Updated api)
 =======
 >>>>>>> parent of 31cb9c9 (Updated api)
 =======
@@ -88,6 +94,7 @@ namespace VitalMetrics.Controllers
 
             if (await _dbContext.Users.AnyAsync(u => u.Email == userSignUp.Email))
             {
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -159,6 +166,16 @@ namespace VitalMetrics.Controllers
             }
 
 >>>>>>> parent of 31cb9c9 (Updated api)
+=======
+                return Conflict(new { message = "Email is already in use." });
+            }
+
+            if (!IsPasswordSecure(userSignUp.Password))
+            {
+                return Conflict(new { message = "Password is not secure." });
+            }
+
+>>>>>>> parent of 31cb9c9 (Updated api)
             var user = MapSignUpDTOToUser(userSignUp);
 
             /* var r2Service = new R2Service(_accessKey, _secretKey);
@@ -169,6 +186,9 @@ namespace VitalMetrics.Controllers
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> parent of 31cb9c9 (Updated api)
+=======
 >>>>>>> parent of 31cb9c9 (Updated api)
 =======
 >>>>>>> parent of 31cb9c9 (Updated api)
@@ -214,10 +234,14 @@ namespace VitalMetrics.Controllers
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         private bool UserExists(string id)
         {
             return _dbContext.Users.Any(e => e.Id == id);   
         }
+=======
+
+>>>>>>> parent of 31cb9c9 (Updated api)
 =======
 
 >>>>>>> parent of 31cb9c9 (Updated api)
@@ -248,6 +272,7 @@ namespace VitalMetrics.Controllers
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
             if (!user.IsEmailConfirmed)
             {
                 return Unauthorized(
@@ -268,6 +293,8 @@ namespace VitalMetrics.Controllers
                }
            );
 =======
+=======
+>>>>>>> parent of 31cb9c9 (Updated api)
 =======
 >>>>>>> parent of 31cb9c9 (Updated api)
 =======
