@@ -11,8 +11,6 @@
         public string? Region { get; set; }
         public string? Postal { get; set; }
         public string? ProfilePicture { get; set; }
-        public bool IsEmailConfirmed { get; set; }
-        public string? EmailConfirmationToken { get; set; }
         public string? GoogleId { get; set; } // Google Account ID
         public string? Country { get; set; }
         public string? Phone { get; set; }

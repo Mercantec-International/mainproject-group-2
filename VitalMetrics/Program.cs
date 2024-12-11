@@ -47,6 +47,7 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddDbContext<AppDBContext>(options =>
         options.UseNpgsql(connectionString));
+<<<<<<< HEAD
 
 
 builder.Services.AddScoped<SignUpService>();
@@ -54,6 +55,8 @@ builder.Services.AddScoped<JWTService>();
 builder.Services.AddScoped<EmailService>();
 builder.Services.AddSingleton<EmailService>();
 
+=======
+>>>>>>> parent of 31cb9c9 (Updated api)
 
 // Configure JWT Authentication
 builder.Services.AddAuthentication(x =>

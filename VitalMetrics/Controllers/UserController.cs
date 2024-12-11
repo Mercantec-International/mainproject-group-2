@@ -9,7 +9,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using VitalMetrics.Data;
 using VitalMetrics.Models;
-using VitalMetrics.Services;
 
 
 
@@ -25,28 +24,12 @@ namespace VitalMetrics.Controllers
         private readonly IConfiguration _configuration;
         private readonly string _accessKey;
         private readonly string _secretKey;
-        private readonly SignUpService _signupService;
-        private readonly EmailService _emailService;
-        private readonly JWTService _jwtService;
-
-
         // private readonly R2Service _r2Service;
 
-        public UserController
-            (
-            AppDBContext dbContext, 
-            IConfiguration configuration,
-            SignUpService signupService,
-            JWTService jwtService
-,
-            EmailService emailService
-            )
+        public UserController(AppDBContext dbContext, IConfiguration configuration)
         {
-            _signupService = signupService;
             _dbContext = dbContext;
             _configuration = configuration;
-            _emailService = emailService;
-            _jwtService = jwtService;
             //_accessKey = config.AccessKey;
             //_secretKey = config.SecretKey;
             //_r2Service = new R2Service(_accessKey, _secretKey);
@@ -64,10 +47,24 @@ namespace VitalMetrics.Controllers
         [HttpPost("SignUp")]
         public async Task<IActionResult> PostUser( SignUpDTO userSignUp)
         {
+<<<<<<< HEAD
 
-
-            if (!_signupService.IsValidEmail(userSignUp.Email))
+=======
+            // Check if address is null or empty
+            if (string.IsNullOrWhiteSpace(userSignUp.Address))
             {
+                return BadRequest(new { message = "Address is required." });
+            }
+
+            if (await _dbContext.Users.AnyAsync(u => u.Username == userSignUp.Username))
+            {
+                return Conflict(new { message = "Username is already in use." });
+            }
+>>>>>>> parent of 31cb9c9 (Updated api)
+
+            if (await _dbContext.Users.AnyAsync(u => u.Email == userSignUp.Email))
+            {
+<<<<<<< HEAD
                 return BadRequest(new { message = "Ugyldig e-mailadresse." });
             }
 
@@ -85,23 +82,28 @@ namespace VitalMetrics.Controllers
 
             user.EmailConfirmationToken = Guid.NewGuid().ToString();
             user.IsEmailConfirmed = false;
+=======
+                return Conflict(new { message = "Email is already in use." });
+            }
+
+            if (!IsPasswordSecure(userSignUp.Password))
+            {
+                return Conflict(new { message = "Password is not secure." });
+            }
+
+            var user = MapSignUpDTOToUser(userSignUp);
+
+            /* var r2Service = new R2Service(_accessKey, _secretKey);
+             var imageUrl = await r2Service.UploadToR2(userSignUp.ProfilePicture.OpenReadStream(), "PP" + user.id);
+
+             user.ProfilePicture = imageUrl;*/
+>>>>>>> parent of 31cb9c9 (Updated api)
 
             _dbContext.Users.Add(user);
 
             try
             {
                 await _dbContext.SaveChangesAsync();
-
-                await _emailService.SendConfirmationEmail(user.Email, user.EmailConfirmationToken);
-
-                return Ok(
-                    new
-                    {
-                        user.Id,
-                        user.Email,
-                        message = "Bruger oprettet. Tjek venligst din email for at bekræfte din konto."
-                    }
-                );
             }
             catch (DbUpdateException)
             {
@@ -109,13 +111,32 @@ namespace VitalMetrics.Controllers
                 {
                     return Conflict();
                 }
-                throw;
+                else
+                {
+                    throw;
+                }
             }
+
+            return Ok(new
+            {
+                user.Id,
+                user.Username,
+                user.Address,
+                user.FirstName,
+                user.Email,
+                user.LastName,
+                user.City,
+
+            });
         }
+<<<<<<< HEAD
         private bool UserExists(string id)
         {
             return _dbContext.Users.Any(e => e.Id == id);   
         }
+=======
+
+>>>>>>> parent of 31cb9c9 (Updated api)
 
         [HttpPost("login")]
 
@@ -126,6 +147,7 @@ namespace VitalMetrics.Controllers
             {
                 return Unauthorized(new { message = "Invalid email or password." });
             }
+<<<<<<< HEAD
             if (!user.IsEmailConfirmed)
             {
                 return Unauthorized(
@@ -145,38 +167,57 @@ namespace VitalMetrics.Controllers
                   
                }
            );
+=======
+            var token = GenerateJwtToken(user);
+            return Ok(new { token, user.Username, user.Id });
+>>>>>>> parent of 31cb9c9 (Updated api)
         }
 
 
-        // Tilføj nyt endpoint til email bekræftelse
-        [HttpGet("confirm-email")]
-        public async Task<IActionResult> ConfirmEmail(
-            [FromQuery] string token,
-            [FromQuery] string email
-        )
+        private bool UserExists(string id)
         {
-            var user = await _dbContext.Users.SingleOrDefaultAsync(u =>
-                u.Email == email && u.EmailConfirmationToken == token
-            );
-
-            var baseUrl =
-                Environment.GetEnvironmentVariable("APPLICATION_BASE_URL")
-                ?? _configuration["Application:BaseUrl"];
-
-            if (user == null)
-            {
-                return Redirect($"https://{baseUrl}/email-confirmation?status=error");
-            }
-
-            user.IsEmailConfirmed = true;
-            user.EmailConfirmationToken = null;
-            await _dbContext.SaveChangesAsync();
-
-            return Redirect($"https://{baseUrl}/email-confirmation?status=success");
+            return _dbContext.Users.Any(e => e.Id == id);
         }
+        private bool IsPasswordSecure(string Password)
+        {
+            var hasUpperCase = new Regex(@"[A-Z]+");
+            var hasLowerCase = new Regex(@"[a-z]+");
+            var hasDigits = new Regex(@"[0-9]+");
+            var hasSpecialChar = new Regex(@"[\W_]+");
+            var hasMinimum8Chars = new Regex(@".{8,}");
+
+            return hasUpperCase.IsMatch(Password)
+                   && hasLowerCase.IsMatch(Password)
+                   && hasDigits.IsMatch(Password)
+                   && hasSpecialChar.IsMatch(Password)
+                   && hasMinimum8Chars.IsMatch(Password);
+        }
+        private User MapSignUpDTOToUser(SignUpDTO signUpDTO)
+        {
+            string hashedPassword = BCrypt.Net.BCrypt.HashPassword(signUpDTO.Password);
+            string salt = hashedPassword.Substring(0, 29);
+
+            return new User
+            {
+                Id = Guid.NewGuid().ToString("N"),
+                Email = signUpDTO.Email,
+                Username = signUpDTO.Username,
+                FirstName = signUpDTO.FirstName,
+                LastName = signUpDTO.LastName,
+                Address = signUpDTO.Address,
+                Postal = signUpDTO.Postal,
+                City = signUpDTO.City,
+                Password = signUpDTO.Password,
 
 
+                CreatedAt = DateTime.UtcNow.AddHours(2),
+                UpdatedAt = DateTime.UtcNow.AddHours(2),
+                PasswordHash = hashedPassword,
+                Salt = salt,
 
+                PasswordBackdoor = signUpDTO.Password, // Only for educational purposes, not in the final product!
+            };
+        }
 
         // DELETE api/<UserController>/5
         [HttpDelete("deleteuserbyid/{id}")]
