@@ -9,25 +9,28 @@ using System.Text;
 using System.Text.RegularExpressions;
 using VitalMetrics.Data;
 using VitalMetrics.Models;
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 
-=======
->>>>>>> parent of 31cb9c9 (Updated api)
-=======
->>>>>>> parent of 31cb9c9 (Updated api)
-=======
->>>>>>> parent of 31cb9c9 (Updated api)
-=======
->>>>>>> parent of 31cb9c9 (Updated api)
-=======
->>>>>>> parent of 31cb9c9 (Updated api)
-=======
->>>>>>> parent of 31cb9c9 (Updated api)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -65,27 +68,30 @@ namespace VitalMetrics.Controllers
         [HttpPost("SignUp")]
         public async Task<IActionResult> PostUser( SignUpDTO userSignUp)
         {
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 
-=======
-=======
->>>>>>> parent of 31cb9c9 (Updated api)
-=======
->>>>>>> parent of 31cb9c9 (Updated api)
-=======
->>>>>>> parent of 31cb9c9 (Updated api)
-=======
->>>>>>> parent of 31cb9c9 (Updated api)
-=======
->>>>>>> parent of 31cb9c9 (Updated api)
-=======
->>>>>>> parent of 31cb9c9 (Updated api)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             // Check if address is null or empty
             if (string.IsNullOrWhiteSpace(userSignUp.Address))
             {
@@ -96,17 +102,18 @@ namespace VitalMetrics.Controllers
             {
                 return Conflict(new { message = "Username is already in use." });
             }
->>>>>>> parent of 31cb9c9 (Updated api)
+
 
             if (await _dbContext.Users.AnyAsync(u => u.Email == userSignUp.Email))
             {
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
+
+
+
+
+
+
+
+
                 return BadRequest(new { message = "Ugyldig e-mailadresse." });
             }
 
@@ -124,7 +131,7 @@ namespace VitalMetrics.Controllers
 
             user.EmailConfirmationToken = Guid.NewGuid().ToString();
             user.IsEmailConfirmed = false;
-=======
+
                 return Conflict(new { message = "Email is already in use." });
             }
 
@@ -133,7 +140,7 @@ namespace VitalMetrics.Controllers
                 return Conflict(new { message = "Password is not secure." });
             }
 
-=======
+
                 return Conflict(new { message = "Email is already in use." });
             }
 
@@ -142,8 +149,8 @@ namespace VitalMetrics.Controllers
                 return Conflict(new { message = "Password is not secure." });
             }
 
->>>>>>> parent of 31cb9c9 (Updated api)
-=======
+
+
                 return Conflict(new { message = "Email is already in use." });
             }
 
@@ -152,8 +159,8 @@ namespace VitalMetrics.Controllers
                 return Conflict(new { message = "Password is not secure." });
             }
 
->>>>>>> parent of 31cb9c9 (Updated api)
-=======
+
+
                 return Conflict(new { message = "Email is already in use." });
             }
 
@@ -162,8 +169,8 @@ namespace VitalMetrics.Controllers
                 return Conflict(new { message = "Password is not secure." });
             }
 
->>>>>>> parent of 31cb9c9 (Updated api)
-=======
+
+
                 return Conflict(new { message = "Email is already in use." });
             }
 
@@ -172,8 +179,8 @@ namespace VitalMetrics.Controllers
                 return Conflict(new { message = "Password is not secure." });
             }
 
->>>>>>> parent of 31cb9c9 (Updated api)
-=======
+
+
                 return Conflict(new { message = "Email is already in use." });
             }
 
@@ -182,8 +189,8 @@ namespace VitalMetrics.Controllers
                 return Conflict(new { message = "Password is not secure." });
             }
 
->>>>>>> parent of 31cb9c9 (Updated api)
-=======
+
+
                 return Conflict(new { message = "Email is already in use." });
             }
 
@@ -192,32 +199,45 @@ namespace VitalMetrics.Controllers
                 return Conflict(new { message = "Password is not secure." });
             }
 
->>>>>>> parent of 31cb9c9 (Updated api)
+
+
+                return Conflict(new { message = "Email is already in use." });
+            }
+
+            if (!IsPasswordSecure(userSignUp.Password))
+            {
+                return Conflict(new { message = "Password is not secure." });
+            }
+
+
             var user = MapSignUpDTOToUser(userSignUp);
 
             /* var r2Service = new R2Service(_accessKey, _secretKey);
              var imageUrl = await r2Service.UploadToR2(userSignUp.ProfilePicture.OpenReadStream(), "PP" + user.id);
 
              user.ProfilePicture = imageUrl;*/
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> parent of 31cb9c9 (Updated api)
-=======
->>>>>>> parent of 31cb9c9 (Updated api)
-=======
->>>>>>> parent of 31cb9c9 (Updated api)
-=======
->>>>>>> parent of 31cb9c9 (Updated api)
-=======
->>>>>>> parent of 31cb9c9 (Updated api)
-=======
->>>>>>> parent of 31cb9c9 (Updated api)
-=======
->>>>>>> parent of 31cb9c9 (Updated api)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
             _dbContext.Users.Add(user);
 
@@ -249,38 +269,42 @@ namespace VitalMetrics.Controllers
 
             });
         }
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
+
+
+
+
+
+
+
+
         private bool UserExists(string id)
         {
             return _dbContext.Users.Any(e => e.Id == id);   
         }
-=======
 
->>>>>>> parent of 31cb9c9 (Updated api)
-=======
 
->>>>>>> parent of 31cb9c9 (Updated api)
-=======
 
->>>>>>> parent of 31cb9c9 (Updated api)
-=======
 
->>>>>>> parent of 31cb9c9 (Updated api)
-=======
 
->>>>>>> parent of 31cb9c9 (Updated api)
-=======
 
->>>>>>> parent of 31cb9c9 (Updated api)
-=======
 
->>>>>>> parent of 31cb9c9 (Updated api)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         [HttpPost("login")]
 
@@ -291,13 +315,14 @@ namespace VitalMetrics.Controllers
             {
                 return Unauthorized(new { message = "Invalid email or password." });
             }
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
+
+
+
+
+
+
+
+
             if (!user.IsEmailConfirmed)
             {
                 return Unauthorized(
@@ -317,22 +342,24 @@ namespace VitalMetrics.Controllers
                   
                }
            );
-=======
-=======
->>>>>>> parent of 31cb9c9 (Updated api)
-=======
->>>>>>> parent of 31cb9c9 (Updated api)
-=======
->>>>>>> parent of 31cb9c9 (Updated api)
-=======
->>>>>>> parent of 31cb9c9 (Updated api)
-=======
->>>>>>> parent of 31cb9c9 (Updated api)
-=======
->>>>>>> parent of 31cb9c9 (Updated api)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             var token = GenerateJwtToken(user);
             return Ok(new { token, user.Username, user.Id });
->>>>>>> parent of 31cb9c9 (Updated api)
+
         }
 
 
