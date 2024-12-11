@@ -14,7 +14,10 @@ using VitalMetrics.Models;
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
+=======
+>>>>>>> parent of 31cb9c9 (Updated api)
 =======
 >>>>>>> parent of 31cb9c9 (Updated api)
 =======
@@ -62,6 +65,7 @@ namespace VitalMetrics.Controllers
         [HttpPost("SignUp")]
         public async Task<IActionResult> PostUser( SignUpDTO userSignUp)
         {
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
