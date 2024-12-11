@@ -106,30 +106,6 @@ namespace VitalMetrics.Controllers
         }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         [HttpPost("login")]
 
         public async Task<IActionResult> Login(LoginDTO login)
